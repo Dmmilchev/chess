@@ -47,12 +47,13 @@ class ChessGUI:
                     # Reset the flag when the mouse button is released
                     mouse_pressed = False
 
+                if event.type == pygame.KEYDOWN:
+
+                    if event.key == pygame.K_BACKSPACE:
+                        self.__game.undo_move()
             # adding background:
             self.__game.draw(screen)
 
-            # RENDER YOUR GAME HERE
-
-            # flip() the display to put your work on screen
             pygame.display.flip()
 
             clock.tick(60)  # limits FPS to 60

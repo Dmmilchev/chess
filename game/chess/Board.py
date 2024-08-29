@@ -80,7 +80,7 @@ class Board:
 
         if self.selected_piece is not None:
             draw_rectangle(self.selected_piece.position)
-            for move in self.selected_piece.immediate_valid_moves(self.board):
+            for move in self.valid_moves(self.selected_piece):
                 draw_rectangle(move.to_position)
 
         for row in range(8):
@@ -120,17 +120,17 @@ class Board:
 
         return board
 
-    def check_for_promotion(self, history: list[Move]) -> None:
+    def check_for_promotion(self) -> None:
         for i in range(8):
             if isinstance(self.board[7][i], Pawn) and self.board[7][i].colour == 'white':
                 self.board[7][i] = None
                 self.board[7][i] = Queen('white', self.__piece_height, self.__piece_width, [7, i])
-                history.append(Move(self.board[7][i], to_position=[7, i], captured_piece=None))
+                self.history.append(Move(self.board[7][i], to_position=[7, i], captured_piece=None))
         for i in range(8):
             if isinstance(self.board[0][i], Pawn) and self.board[7][i].colour == 'black':
                 self.board[0][i] = None
                 self.board[0][i] = Queen('black', self.__piece_height, self.__piece_width, [0, i])
-                history.append(Move(self.board[0][i], to_position=[0, i], captured_piece=None))
+                self.history.append(Move(self.board[0][i], to_position=[0, i], captured_piece=None))
 
     def get_danger_moves(self, colour: str) -> set[Move]:
         danger_moves: set[Move] = set()
@@ -158,8 +158,90 @@ class Board:
         attacked_squares = [x.to_position for x in danger_moves]
         return get_king().position in attacked_squares
 
+    def execute_move(self, move: Move) -> None:
+        if move.captured_piece is not None:
+            self.board[move.captured_piece.position[0]][move.captured_piece.position[1]] = None
+        self.board[move.to_position[0]][move.to_position[1]] = move.piece
+        self.board[move.from_position[0]][move.from_position[1]] = None
+        move.piece.move(move.to_position)
+        self.history.append(move)
+        self.check_for_promotion()
+
+    def undo_move(self) -> None:
+        if len(self.history) < 1:
+            raise ValueError('You have to play a move before undoing it.')
+        move = self.history[-1]
+        self.board[move.from_position[0]][move.from_position[1]] = move.piece
+        self.board[move.to_position[0]][move.to_position[1]] = None
+        move.piece.position = move.from_position
+        if move.captured_piece is not None:
+            self.board[move.captured_piece_position[0]][move.captured_piece_position[1]] = move.captured_piece
+        if move.piece not in [past_move.piece for past_move in self.history[:-1:1]]:
+            move.piece.moved = False
+        self.history.pop()
+
     def valid_moves(self, piece: Piece) -> set[Move]:
-        pass
+        moves: set[Move] = piece.immediate_valid_moves(self.board)
+
+        # EN PASSANT WHITE
+        if isinstance(piece, Pawn) and piece.colour == 'white' and len(self.history) > 0:
+            # EN PASSANT LEFT
+            if piece.position[0] == 4:
+                last_move = self.history[-1]
+                if piece.position[1] > 1:
+                    if isinstance(last_move.piece, Pawn) and \
+                            last_move.from_position[1] == piece.position[1] - 1 and \
+                            last_move.from_position[0] == 6 and \
+                            last_move.to_position[0] == 4:
+                        moves.add(Move(piece, [piece.position[0] + 1, piece.position[1] - 1], last_move.piece))
+
+            # EN PASSANT RIGHT
+            if piece.position[0] == 4 and piece.colour == 'white' and len(self.history) > 0:
+                last_move = self.history[-1]
+                if piece.position[1] < 7:
+                    if isinstance(last_move.piece, Pawn) and \
+                            last_move.from_position[1] == piece.position[1] + 1 and \
+                            last_move.from_position[0] == 6 and \
+                            last_move.to_position[0] == 4:
+                        moves.add(Move(piece, [piece.position[0] + 1, piece.position[1] + 1], last_move.piece))
+
+        # EN PASSANT LEFT
+        if piece.position[0] == 3 and piece.colour == 'black' and len(self.history) > 0:
+            last_move = self.history[-1]
+            if piece.position[1] > 1:
+                if isinstance(last_move.piece, Pawn) and \
+                        last_move.from_position[1] == piece.position[1] - 1 and \
+                        last_move.from_position[0] == 1 and \
+                        last_move.to_position[0] == 3:
+                    moves.add(Move(piece, [piece.position[0] - 1, piece.position[1] - 1], last_move.piece))
+
+        # EN PASSANT RIGHT
+        if piece.position[0] == 3 and piece.colour == 'black' and len(self.history) > 0:
+            last_move = self.history[-1]
+            if piece.position[1] < 7:
+                if isinstance(last_move.piece, Pawn) and \
+                        last_move.from_position[1] == piece.position[1] + 1 and \
+                        last_move.from_position[0] == 1 and \
+                        last_move.to_position[0] == 3:
+                    moves.add(Move(piece, [piece.position[0] - 1, piece.position[1] + 1], last_move.piece))
+
+        moves_to_remove: set[Move] = set()
+
+        # IF CHECK AFTER MOVE, DISCARD IT
+        for move in moves:
+            self.execute_move(move)
+            if self.is_check(piece.colour):
+                moves_to_remove.add(move)
+            self.undo_move()
+
+        moves = set([move for move in moves if move.to_position not in [m.to_position for m in moves_to_remove]])
+
+
+
+        return moves
+        # If check after move, discard it
+            # get all moves
+            # play the move
+            # if check after move, undo
 
         # En passant if piece is Pawn
-        # If check after move, discard it

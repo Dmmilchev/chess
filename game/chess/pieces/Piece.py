@@ -85,6 +85,10 @@ class Piece(ABC):
         image_name += '.svg'
         return os.path.join('game', 'static', 'pieces', image_name)
 
+    def move(self, position: list[int]) -> None:
+        self.position = position
+        self.moved = True
+
     @abstractmethod
     def immediate_valid_moves(self, board: 'list[list[Piece]]'):
         pass

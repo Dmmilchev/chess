@@ -36,22 +36,15 @@ class Game:
             self.board.selected_piece = self.board.board[clicked_row][clicked_col]
 
         else:
-            moves = [x.to_position for x in self.board.selected_piece.immediate_valid_moves(self.board.board)]
+            moves = [x.to_position for x in self.board.valid_moves(self.board.selected_piece)]
 
             if [clicked_row, clicked_col] in moves and self.board.selected_piece.colour == self.turn:
                 # EXECUTE MOVE
                 move_to_be_played = [move for move in
-                                     self.board.selected_piece.immediate_valid_moves(self.board.board)
+                                     self.board.valid_moves(self.board.selected_piece)
                                      if move.to_position == [clicked_row, clicked_col]][0]
-                if move_to_be_played.captured_piece is not None: # CAPTURED PIECE = NONE, BECAUSE OF EN PASSANT
-                    self.board.board[move_to_be_played.captured_piece.position[0]][move_to_be_played.captured_piece.position[1]] = None
-                self.board.board[clicked_row][clicked_col] = self.board.selected_piece
-                self.board.board[self.board.selected_piece.position[0]][self.board.selected_piece.position[1]] = None
-                self.board.selected_piece.position = [clicked_row, clicked_col]
-                self.board.selected_piece.moved = True
+                self.board.execute_move(move_to_be_played)
                 self.board.selected_piece = None
-                self.board.history.append(move_to_be_played)
-                self.board.check_for_promotion(history=self.board.history)
                 self.change_turn()
 
             elif (self.board.selected_piece.position == [clicked_row, clicked_col] or  # CLICKED ON ITSELF
@@ -60,3 +53,7 @@ class Game:
 
             else:  # CLICKED ON ANOTHER PIECE
                 self.board.selected_piece = self.board.board[clicked_row][clicked_col]
+
+    def undo_move(self) -> None:
+        self.board.undo_move()
+        self.change_turn()

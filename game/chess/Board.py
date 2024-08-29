@@ -22,6 +22,7 @@ class Board:
             (self.__height, self.__width))
         self.__board: list[list[Union[Piece, None]]] = self.setup_board(self)
         self.__selected_piece: Union[Piece, None] = None
+        self.__history: list[Move] = []
 
     # GETTERS
     @property
@@ -48,6 +49,10 @@ class Board:
     def selected_piece(self) -> Union[Piece, None]:
         return self.__selected_piece
 
+    @property
+    def history(self) -> list[Move]:
+        return self.__history
+
     # SETTERS
     @board.setter
     def board(self, board: list[list[Union[Piece, None]]]) -> None:
@@ -57,8 +62,12 @@ class Board:
     def selected_piece(self, selected_piece: Union[Piece, None]) -> None:
         self.__selected_piece = selected_piece
 
+    @history.setter
+    def history(self, history: list[Move]) -> None:
+        self.__history = history
+
     # FUNCTIONS
-    def draw(self, surface: pygame.Surface, history: 'list[Move]') -> None:
+    def draw(self, surface: pygame.Surface) -> None:
         def draw_rectangle(position: list[int]) -> None:
             light_green = (144, 238, 144)
             coord_row = 7 - position[0]
@@ -71,7 +80,7 @@ class Board:
 
         if self.selected_piece is not None:
             draw_rectangle(self.selected_piece.position)
-            for move in self.selected_piece.valid_moves(self.board, history):
+            for move in self.selected_piece.immediate_valid_moves(self.board):
                 draw_rectangle(move.to_position)
 
         for row in range(8):
@@ -122,3 +131,35 @@ class Board:
                 self.board[0][i] = None
                 self.board[0][i] = Queen('black', self.__piece_height, self.__piece_width, [0, i])
                 history.append(Move(self.board[0][i], to_position=[0, i], captured_piece=None))
+
+    def get_danger_moves(self, colour: str) -> set[Move]:
+        danger_moves: set[Move] = set()
+        for i in range(8):
+            for j in range(8):
+                piece = self.board[i][j]
+                if piece is not None and piece.colour == colour:
+                    danger_moves = danger_moves.union(piece.get_danger_moves(self.board))
+        return danger_moves
+
+    def is_check(self, colour: str) -> bool:
+        def get_king() -> Piece:
+            for i in range(8):
+                for j in range(8):
+                    piece = self.board[i][j]
+                    if isinstance(piece, King) and piece.colour == colour:
+                        return piece
+
+        danger_moves: set[Move] = set()
+        if colour == 'white':
+            danger_moves = self.get_danger_moves('black')
+        if colour == 'black':
+            danger_moves = self.get_danger_moves('white')
+
+        attacked_squares = [x.to_position for x in danger_moves]
+        return get_king().position in attacked_squares
+
+    def valid_moves(self, piece: Piece) -> set[Move]:
+        pass
+
+        # En passant if piece is Pawn
+        # If check after move, discard it

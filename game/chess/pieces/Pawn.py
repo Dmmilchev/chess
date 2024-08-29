@@ -3,7 +3,6 @@ from game.chess.Move import Move
 import pygame
 import os
 from typing import Union
-from game.Game import Game
 
 
 class Pawn(Piece):
@@ -22,10 +21,8 @@ class Pawn(Piece):
     def image(self) -> pygame.Surface:
         return self.__image
 
-    def valid_moves(self, game: Game) -> set[Move]:
+    def immediate_valid_moves(self, board: 'list[list[Piece]]') -> set[Move]:
         moves: set = set()
-        board = game.board.board
-        history = game.history
 
         if self.colour == 'white':
 
@@ -56,25 +53,25 @@ class Pawn(Piece):
                                    [self.position[0] + 1, self.position[1] + 1],
                                    enemy))
 
-            # EN PASSANT LEFT
-            if self.position[0] == 4:
-                last_move = history[-1]
-                if self.position[1] > 1:
-                    if isinstance(last_move.piece, Pawn) and \
-                            last_move.from_position[1] == self.position[1] - 1 and \
-                            last_move.from_position[0] == 6 and \
-                            last_move.to_position[0] == 4:
-                        moves.add(Move(self, [self.position[0] + 1, self.position[1] - 1], last_move.piece))
-
-            # EN PASSANT RIGHT
-            if self.position[0] == 4:
-                last_move = history[-1]
-                if self.position[1] < 7:
-                    if isinstance(last_move.piece, Pawn) and \
-                            last_move.from_position[1] == self.position[1] + 1 and \
-                            last_move.from_position[0] == 6 and \
-                            last_move.to_position[0] == 4:
-                        moves.add(Move(self, [self.position[0] + 1, self.position[1] + 1], last_move.piece))
+            # # EN PASSANT LEFT
+            # if self.position[0] == 4:
+            #     last_move = history[-1]
+            #     if self.position[1] > 1:
+            #         if isinstance(last_move.piece, Pawn) and \
+            #                 last_move.from_position[1] == self.position[1] - 1 and \
+            #                 last_move.from_position[0] == 6 and \
+            #                 last_move.to_position[0] == 4:
+            #             moves.add(Move(self, [self.position[0] + 1, self.position[1] - 1], last_move.piece))
+            #
+            # # EN PASSANT RIGHT
+            # if self.position[0] == 4:
+            #     last_move = history[-1]
+            #     if self.position[1] < 7:
+            #         if isinstance(last_move.piece, Pawn) and \
+            #                 last_move.from_position[1] == self.position[1] + 1 and \
+            #                 last_move.from_position[0] == 6 and \
+            #                 last_move.to_position[0] == 4:
+            #             moves.add(Move(self, [self.position[0] + 1, self.position[1] + 1], last_move.piece))
 
         elif self.colour == 'black':
 
@@ -105,30 +102,30 @@ class Pawn(Piece):
                                    [self.position[0] - 1, self.position[1] + 1],
                                    enemy))
 
-            # EN PASSANT LEFT
-            if self.position[0] == 3:
-                last_move = history[-1]
-                if self.position[1] > 1:
-                    if isinstance(last_move.piece, Pawn) and \
-                            last_move.from_position[1] == self.position[1] - 1 and \
-                            last_move.from_position[0] == 1 and \
-                            last_move.to_position[0] == 3:
-                        moves.add(Move(self, [self.position[0] - 1, self.position[1] - 1], last_move.piece))
-
-            # EN PASSANT RIGHT
-            if self.position[0] == 3:
-                last_move = history[-1]
-                if self.position[1] < 7:
-                    if isinstance(last_move.piece, Pawn) and \
-                            last_move.from_position[1] == self.position[1] + 1 and \
-                            last_move.from_position[0] == 1 and \
-                            last_move.to_position[0] == 3:
-                        moves.add(Move(self, [self.position[0] - 1, self.position[1] + 1], last_move.piece))
+            # # EN PASSANT LEFT
+            # if self.position[0] == 3:
+            #     last_move = history[-1]
+            #     if self.position[1] > 1:
+            #         if isinstance(last_move.piece, Pawn) and \
+            #                 last_move.from_position[1] == self.position[1] - 1 and \
+            #                 last_move.from_position[0] == 1 and \
+            #                 last_move.to_position[0] == 3:
+            #             moves.add(Move(self, [self.position[0] - 1, self.position[1] - 1], last_move.piece))
+            #
+            # # EN PASSANT RIGHT
+            # if self.position[0] == 3:
+            #     last_move = history[-1]
+            #     if self.position[1] < 7:
+            #         if isinstance(last_move.piece, Pawn) and \
+            #                 last_move.from_position[1] == self.position[1] + 1 and \
+            #                 last_move.from_position[0] == 1 and \
+            #                 last_move.to_position[0] == 3:
+            #             moves.add(Move(self, [self.position[0] - 1, self.position[1] + 1], last_move.piece))
 
         return moves
 
-    def get_danger_moves(self, game: Game) -> set[Move]:
-        valid_moves = self.valid_moves(game)
+    def get_danger_moves(self, board: 'list[list[Piece]]') -> set[Move]:
+        valid_moves = self.immediate_valid_moves(board)
         danger_moves = set([move for move in valid_moves if self.position[1] != move.to_position[1]])
 
         if self.colour == 'white':

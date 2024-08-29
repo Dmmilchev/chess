@@ -3,7 +3,6 @@ import pygame
 from abc import abstractmethod
 from typing import Union
 from game.chess.Move import Move
-from game.Game import Game
 
 class Knight(Piece):
     def __init__(self, colour: str, height: int, width: int, position: list[int]) -> None:
@@ -21,12 +20,10 @@ class Knight(Piece):
     def image(self) -> pygame.Surface:
         return self.__image
 
-    def valid_moves(self, game: Game) -> set[Move]:
+    def immediate_valid_moves(self, board: 'list[list[Piece]]') -> set[Move]:
         def in_range(a: int, b: int):
             return 0 <= a <= 7 and 0 <= b <= 7
         moves: set = set()
-
-        board = game.board.board
 
         row = self.position[0] + 2
         col = self.position[1] + 1
@@ -94,5 +91,5 @@ class Knight(Piece):
 
         return moves
 
-    def get_danger_moves(self, game: Game) -> set[Move]:
-        return self.valid_moves(game)
+    def get_danger_moves(self, board: 'list[list[Piece]]') -> set[Move]:
+        return self.immediate_valid_moves(board)

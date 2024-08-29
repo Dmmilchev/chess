@@ -3,7 +3,6 @@ import pygame
 from abc import ABC, abstractmethod
 import os
 from typing import Union
-from game.Game import Game
 
 
 class Piece(ABC):
@@ -87,11 +86,11 @@ class Piece(ABC):
         return os.path.join('game', 'static', 'pieces', image_name)
 
     @abstractmethod
-    def valid_moves(self, game: Game):
+    def immediate_valid_moves(self, board: 'list[list[Piece]]'):
         pass
 
     @abstractmethod
-    def get_danger_moves(self, game: Game):
+    def get_danger_moves(self, board: 'list[list[Piece]]'):
         pass
 
     def __eq__(self, other: 'Piece'):

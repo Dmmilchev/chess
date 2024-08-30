@@ -57,3 +57,17 @@ class Game:
     def undo_move(self) -> None:
         self.board.undo_move()
         self.change_turn()
+
+    def is_game_over(self) -> bool:
+        return (self.board.is_checkmate('white') or
+                self.board.is_stalemate('white') or
+                self.board.is_checkmate('black') or
+                self.board.is_stalemate('black'))
+
+    def get_winner(self) -> str:
+        if self.board.is_stalemate('white') or self.board.is_stalemate('black'):
+            return 'draw'
+        elif self.board.is_checkmate('white'):
+            return 'black'
+        elif self.board.is_checkmate('black'):
+            return 'white'

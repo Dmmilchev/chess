@@ -95,7 +95,7 @@ class Board:
             board[1][col] = Pawn('white', self.__piece_height, self.__piece_width, [1, col])
             board[6][col] = Pawn('black', self.__piece_height, self.__piece_width, [6, col])
         # WHITE PIECES
-        board[0][0] = Rook('white', self.__piece_height, self.__piece_width,[0, 0])
+        board[0][0] = Rook('white', self.__piece_height, self.__piece_width, [0, 0])
         board[0][7] = Rook('white', self.__piece_height, self.__piece_width, [0, 7])
         board[0][1] = Knight('white', self.__piece_height, self.__piece_width, [0, 1])
         board[0][6] = Knight('white', self.__piece_height, self.__piece_width, [0, 6])
@@ -105,7 +105,7 @@ class Board:
         board[0][4] = King('white', self.__piece_height, self.__piece_width, [0, 4])
 
         # BLACK PIECES
-        board[7][0] = Rook('black', self.__piece_height, self.__piece_width,[7, 0])
+        board[7][0] = Rook('black', self.__piece_height, self.__piece_width, [7, 0])
         board[7][7] = Rook('black', self.__piece_height, self.__piece_width, [7, 7])
         board[7][1] = Knight('black', self.__piece_height, self.__piece_width, [7, 1])
         board[7][6] = Knight('black', self.__piece_height, self.__piece_width, [7, 6])
@@ -114,23 +114,11 @@ class Board:
         board[7][3] = Queen('black', self.__piece_height, self.__piece_width, [7, 3])
         board[7][4] = King('black', self.__piece_height, self.__piece_width, [7, 4])
 
-        # TODO TESTING MOVEMENT SHOULD DELETE
-        board[4][3] = Knight('black', self.__piece_height, self.__piece_width, [4, 3])
-        board[4][4] = Knight('white', self.__piece_height, self.__piece_width, [4, 4])
-
         return board
 
-    def check_for_promotion(self) -> None:
-        for i in range(8):
-            if isinstance(self.board[7][i], Pawn) and self.board[7][i].colour == 'white':
-                self.board[7][i] = None
-                self.board[7][i] = Queen('white', self.__piece_height, self.__piece_width, [7, i])
-                self.history.append(Move(self.board[7][i], to_position=[7, i], captured_piece=None))
-        for i in range(8):
-            if isinstance(self.board[0][i], Pawn) and self.board[7][i].colour == 'black':
-                self.board[0][i] = None
-                self.board[0][i] = Queen('black', self.__piece_height, self.__piece_width, [0, i])
-                self.history.append(Move(self.board[0][i], to_position=[0, i], captured_piece=None))
+    def promote(self, move: Move) -> None:
+        self.board[move.to_position[0]][move.to_position[1]] = \
+            Queen(move.piece.colour, move.piece.height, move.piece.width, move.to_position)
 
     def get_danger_moves(self, colour: str) -> set[Move]:
         danger_moves: set[Move] = set()
@@ -164,27 +152,109 @@ class Board:
         self.board[move.to_position[0]][move.to_position[1]] = move.piece
         self.board[move.from_position[0]][move.from_position[1]] = None
         move.piece.move(move.to_position)
+
+        # PROMOTION
+        if isinstance(move.piece, Pawn) and (move.to_position[0] == 7 or move.to_position[0] == 0):
+            move.is_promotion = True
+            self.promote(move)
+
+        # CASTLING
+        if move.is_castling:
+
+            if move.piece.colour == 'white':
+                # WHITE SMALL CASTLE
+                if move.piece.position == [0, 6]:
+                    self.board[0][5] = self.board[0][7]
+                    self.board[0][5].move([0, 5])
+                    self.board[0][7] = None
+                # WHITE BIG CASTLE
+                if move.piece.position == [0, 2]:
+                    self.board[0][3] = self.board[0][0]
+                    self.board[0][3].move([0, 3])
+                    self.board[0][0] = None
+
+            if move.piece.colour == 'black':
+                # BLACK SMALL CASTLE
+                if move.piece.position == [7, 6]:
+                    self.board[7][5] = self.board[7][7]
+                    self.board[7][5].move([7, 5])
+                    self.board[7][7] = None
+                # BLACK BIG CASTLE
+                if move.piece.position == [7, 2]:
+                    self.board[7][3] = self.board[7][0]
+                    self.board[7][3].move([7, 3])
+                    self.board[7][0] = None
         self.history.append(move)
-        self.check_for_promotion()
 
     def undo_move(self) -> None:
         if len(self.history) < 1:
             raise ValueError('You have to play a move before undoing it.')
         move = self.history[-1]
-        self.board[move.from_position[0]][move.from_position[1]] = move.piece
-        self.board[move.to_position[0]][move.to_position[1]] = None
-        move.piece.position = move.from_position
-        if move.captured_piece is not None:
-            self.board[move.captured_piece_position[0]][move.captured_piece_position[1]] = move.captured_piece
-        if move.piece not in [past_move.piece for past_move in self.history[:-1:1]]:
-            move.piece.moved = False
+
+        if not move.is_castling:
+            self.board[move.from_position[0]][move.from_position[1]] = move.piece
+            self.board[move.to_position[0]][move.to_position[1]] = None
+            move.piece.position = move.from_position
+            if move.captured_piece is not None:
+                self.board[move.captured_piece_position[0]][move.captured_piece_position[1]] = move.captured_piece
+            if move.piece not in [past_move.piece for past_move in self.history[:-1:1]]:
+                move.piece.moved = False
+
+        # CASTLING
+        if move.is_castling:
+
+            if move.piece.colour == 'white':
+                # WHITE SMALL CASTLE
+                if move.to_position == [0, 6]:
+                    self.board[0][4] = self.board[0][6]
+                    self.board[0][4].move([0, 4])
+                    self.board[0][4].moved = False
+                    self.board[0][6] = None
+                    self.board[0][7] = self.board[0][5]
+                    self.board[0][7].move([0, 7])
+                    self.board[0][7].moved = False
+                    self.board[0][5] = None
+                # WHITE BIG CASTLE
+                if move.to_position == [0, 2]:
+                    self.board[0][4] = self.board[0][2]
+                    self.board[0][4].move([0, 4])
+                    self.board[0][4].moved = False
+                    self.board[0][2] = None
+                    self.board[0][0] = self.board[0][3]
+                    self.board[0][0].move([0, 0])
+                    self.board[0][0].moved = False
+                    self.board[0][3] = None
+
+            if move.piece.colour == 'black':
+                # BLACK SMALL CASTLE
+                if move.to_position == [7, 6]:
+                    self.board[7][4] = self.board[7][6]
+                    self.board[7][4].move([7, 4])
+                    self.board[7][4].moved = False
+                    self.board[7][6] = None
+                    self.board[7][7] = self.board[7][5]
+                    self.board[7][7].move([7, 7])
+                    self.board[7][7].moved = False
+                    self.board[7][5] = None
+                # BLACK BIG CASTLE
+                if move.to_position == [7, 2]:
+                    self.board[7][4] = self.board[7][2]
+                    self.board[7][4].move([7, 4])
+                    self.board[7][4].moved = False
+                    self.board[7][2] = None
+                    self.board[7][0] = self.board[7][3]
+                    self.board[7][0].move([7, 0])
+                    self.board[7][0].moved = False
+                    self.board[7][3] = None
+
         self.history.pop()
 
-    def valid_moves(self, piece: Piece) -> set[Move]:
-        moves: set[Move] = piece.immediate_valid_moves(self.board)
+    def en_passant_moves(self, piece: Piece) -> set[Move]:
+        moves: set[Move] = set()
 
         # EN PASSANT WHITE
-        if isinstance(piece, Pawn) and piece.colour == 'white' and len(self.history) > 0:
+        if piece.colour == 'white' and len(self.history) > 0:
+
             # EN PASSANT LEFT
             if piece.position[0] == 4:
                 last_move = self.history[-1]
@@ -196,7 +266,7 @@ class Board:
                         moves.add(Move(piece, [piece.position[0] + 1, piece.position[1] - 1], last_move.piece))
 
             # EN PASSANT RIGHT
-            if piece.position[0] == 4 and piece.colour == 'white' and len(self.history) > 0:
+            if piece.position[0] == 4:
                 last_move = self.history[-1]
                 if piece.position[1] < 7:
                     if isinstance(last_move.piece, Pawn) and \
@@ -205,29 +275,93 @@ class Board:
                             last_move.to_position[0] == 4:
                         moves.add(Move(piece, [piece.position[0] + 1, piece.position[1] + 1], last_move.piece))
 
-        # EN PASSANT LEFT
-        if piece.position[0] == 3 and piece.colour == 'black' and len(self.history) > 0:
-            last_move = self.history[-1]
-            if piece.position[1] > 1:
-                if isinstance(last_move.piece, Pawn) and \
-                        last_move.from_position[1] == piece.position[1] - 1 and \
-                        last_move.from_position[0] == 1 and \
-                        last_move.to_position[0] == 3:
-                    moves.add(Move(piece, [piece.position[0] - 1, piece.position[1] - 1], last_move.piece))
+        if piece.colour == 'black' and len(self.history) > 0:
 
-        # EN PASSANT RIGHT
-        if piece.position[0] == 3 and piece.colour == 'black' and len(self.history) > 0:
-            last_move = self.history[-1]
-            if piece.position[1] < 7:
-                if isinstance(last_move.piece, Pawn) and \
-                        last_move.from_position[1] == piece.position[1] + 1 and \
-                        last_move.from_position[0] == 1 and \
-                        last_move.to_position[0] == 3:
-                    moves.add(Move(piece, [piece.position[0] - 1, piece.position[1] + 1], last_move.piece))
+            # EN PASSANT LEFT
+            if piece.position[0] == 3:
+                last_move = self.history[-1]
+                if piece.position[1] > 1:
+                    if isinstance(last_move.piece, Pawn) and \
+                            last_move.from_position[1] == piece.position[1] - 1 and \
+                            last_move.from_position[0] == 1 and \
+                            last_move.to_position[0] == 3:
+                        moves.add(Move(piece, [piece.position[0] - 1, piece.position[1] - 1], last_move.piece))
 
-        moves_to_remove: set[Move] = set()
+            # EN PASSANT RIGHT
+            if piece.position[0] == 3:
+                last_move = self.history[-1]
+                if piece.position[1] < 7:
+                    if isinstance(last_move.piece, Pawn) and \
+                            last_move.from_position[1] == piece.position[1] + 1 and \
+                            last_move.from_position[0] == 1 and \
+                            last_move.to_position[0] == 3:
+                        moves.add(Move(piece, [piece.position[0] - 1, piece.position[1] + 1], last_move.piece))
+
+        return moves
+
+    def castle_moves(self, piece: Piece) -> set[Move]:
+        if piece.moved:
+            return set()
+
+        moves: set[Move] = set()
+
+        if piece.colour == 'white':
+
+            # WHITE SMALL CASTLE
+            if isinstance(self.board[0][7], Rook) and \
+                    not self.board[0][7].moved and \
+                    self.board[0][5] is None and \
+                    self.board[0][6] is None:
+                danger_squares = [m.to_position for m in self.get_danger_moves('black')]
+                if [0, 5] not in danger_squares and [0, 6] not in danger_squares:
+                    moves.add(Move(piece, to_position=[0, 6], captured_piece=None, is_castling=True))
+
+            # WHITE BIG CASTLE
+            if isinstance(self.board[0][0], Rook) and \
+                    not self.board[0][4].moved and \
+                    self.board[0][1] is None and \
+                    self.board[0][2] is None and \
+                    self.board[0][3] is None:
+                danger_squares = [m.to_position for m in self.get_danger_moves('black')]
+                if [0, 2] not in danger_squares and [0, 3] not in danger_squares:
+                    moves.add(Move(piece, to_position=[0, 2], captured_piece=None, is_castling=True))
+
+        if piece.colour == 'black':
+
+            # BLACK SMALL CASTLE
+            if isinstance(self.board[7][7], Rook) and \
+                    not self.board[7][7].moved and \
+                    self.board[7][5] is None and \
+                    self.board[7][6] is None:
+                danger_squares = [m.to_position for m in self.get_danger_moves('white')]
+                if [7, 5] not in danger_squares and [7, 6] not in danger_squares:
+                    moves.add(Move(piece, to_position=[7, 6], captured_piece=None, is_castling=True))
+
+            # BLACK BIG CASTLE
+            if isinstance(self.board[7][0], Rook) and \
+                    not self.board[7][4].moved and \
+                    self.board[7][1] is None and \
+                    self.board[7][2] is None and \
+                    self.board[7][3] is None:
+                danger_squares = [m.to_position for m in self.get_danger_moves('white')]
+                if [7, 2] not in danger_squares and [7, 3] not in danger_squares:
+                    moves.add(Move(piece, to_position=[7, 2], captured_piece=None, is_castling=True))
+
+        return moves
+
+    def valid_moves(self, piece: Piece) -> set[Move]:
+        moves: set[Move] = piece.immediate_valid_moves(self.board)
+
+        # CASTLING
+        if isinstance(piece, King):
+            moves = moves.union(self.castle_moves(piece))
+
+        # EN PASSANT
+        if isinstance(piece, Pawn):
+            moves = moves.union(self.en_passant_moves(piece))
 
         # IF CHECK AFTER MOVE, DISCARD IT
+        moves_to_remove: set[Move] = set()
         for move in moves:
             self.execute_move(move)
             if self.is_check(piece.colour):
@@ -236,12 +370,4 @@ class Board:
 
         moves = set([move for move in moves if move.to_position not in [m.to_position for m in moves_to_remove]])
 
-
-
         return moves
-        # If check after move, discard it
-            # get all moves
-            # play the move
-            # if check after move, undo
-
-        # En passant if piece is Pawn

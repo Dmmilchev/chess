@@ -3,7 +3,11 @@ from typing import Union
 
 
 class Move:
-    def __init__(self, piece: Piece, to_position: list[int], captured_piece: Union[Piece, None]) -> None:
+    def __init__(self, piece: Piece,
+                 to_position: list[int],
+                 captured_piece: Union[Piece, None],
+                 is_promotion: bool = False,
+                 is_castling: bool = False) -> None:
         self.__piece: Piece = piece
         self.__from_position: list[int] = piece.position
         if len(to_position) == 2 and 0 <= to_position[0] <= 7 and 0 <= to_position[1] <= 7:
@@ -13,6 +17,8 @@ class Move:
         if captured_piece is not None:
             self.__captured_piece_position = captured_piece.position
         self.__captured_piece = captured_piece
+        self.__is_promotion = is_promotion
+        self.__is_castling = is_castling
 
     @property
     def piece(self) -> Piece:
@@ -33,6 +39,18 @@ class Move:
     @property
     def captured_piece_position(self) -> list[int]:
         return self.__captured_piece_position
+
+    @property
+    def is_promotion(self) -> bool:
+        return self.__is_promotion
+
+    @property
+    def is_castling(self) -> bool:
+        return self.__is_castling
+
+    @is_promotion.setter
+    def is_promotion(self, is_promotion: bool) -> None:
+        self.__is_promotion = is_promotion
 
     def __eq__(self, other: 'Move') -> bool:
         if isinstance(other, Move):

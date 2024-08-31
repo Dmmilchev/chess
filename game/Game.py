@@ -1,7 +1,5 @@
 from game.chess.Board import Board
 import pygame
-from game.chess.Move import Move
-from game.chess.pieces.King import King
 
 
 class Game:

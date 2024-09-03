@@ -14,6 +14,14 @@ class Client:
         self.__socket: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__socket.connect((self.__server_ip, self.__server_port))
 
+        colour: bytes = self.receive()
+        self.__colour: str = colour.decode(ENCODING)
+        print(f'You are playing with {self.__colour} pieces.')
+
+    @property
+    def colour(self) -> str:
+        return self.__colour
+
     def send(self, message: bytes) -> None:
         header: str = str(len(message))
         header += (' ' * (self.__header_length - int(len(header))))
@@ -27,24 +35,3 @@ class Client:
         header_length: int = int(header)
         message: bytes = self.__socket.recv(header_length)
         return message
-
-#
-# c = Client()
-#
-#
-# def sending():
-#     while True:
-#         c.send(input())
-#
-#
-# def receiving():
-#     while True:
-#         msg = c.receive()
-#         if msg != '':
-#             print(msg)
-#
-#
-# s_thread = threading.Thread(target=sending)
-# r_thread = threading.Thread(target=receiving)
-# s_thread.start()
-# r_thread.start()

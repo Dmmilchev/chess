@@ -14,10 +14,15 @@ class Game:
             'black': Player(players[1], header_length, encoding)
         }
 
+        self.__turn = 'white'
+
         white_thread = threading.Thread(target=self.handle_player, args=('white', ))
         black_thread = threading.Thread(target=self.handle_player, args=('black', ))
         white_thread.start()
         black_thread.start()
+
+        self.__players['white'].send('white'.encode(self.__players['white'].encoding))
+        self.__players['black'].send('black'.encode(self.__players['black'].encoding))
 
     @staticmethod
     def get_enemy(colour: str) -> str:
@@ -31,7 +36,6 @@ class Game:
 
         while True:
             message = self.__players[colour].receive()
-            if message != '':
+            if message != b'':
                 print(f'Received message from: {colour}. which is: {message}')
                 self.__players[enemy].send(message)
-

@@ -51,7 +51,10 @@ class ChessGUI:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # SELECT A PIECE
                     if not mouse_pressed and 0 <= event.pos[0] <= 800 and 0 <= event.pos[1] <= 800:
+                        # Handles turn based logic also.
                         played_move: Move = self.__game.handle_piece(event.pos)
+                        if played_move is not None and played_move.piece.colour != self.__client.colour:
+                            self.__game.undo_move()
                         if played_move is not None:
                             self.__client.send(pickle.dumps(played_move))
                         mouse_pressed = True

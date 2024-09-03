@@ -7,6 +7,10 @@ class Player:
         self.__header_length = header_length
         self.__encoding = encoding
 
+    @property
+    def encoding(self) -> str:
+        return self.__encoding
+
     def send(self, message: bytes) -> None:
         header: str = str(len(message))
         header += (' ' * (self.__header_length - int(len(header))))

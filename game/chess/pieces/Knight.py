@@ -4,11 +4,24 @@ from abc import abstractmethod
 from typing import Union
 from game.chess.Move import Move
 
+
 class Knight(Piece):
     def __init__(self, colour: str, height: int, width: int, position: list[int]) -> None:
         super().__init__(colour, height, width, position)
 
         path: str = super().calculate_path_to_image('knight', colour)
+        self.__image: pygame.Surface = pygame.transform.scale(
+            pygame.image.load(path),
+            (self.height, self.width))
+
+    def __getstate__(self) -> dict:
+        state = self.__dict__.copy()
+        del state['_Knight__image']
+        return state
+
+    def __setstate__(self, state: dict) -> None:
+        self.__dict__.update(state)
+        path: str = super().calculate_path_to_image('knight', self.colour)
         self.__image: pygame.Surface = pygame.transform.scale(
             pygame.image.load(path),
             (self.height, self.width))

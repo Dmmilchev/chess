@@ -1,5 +1,8 @@
 from game.chess.Board import Board
 import pygame
+from game.chess.Move import Move
+from typing import Union
+import pickle
 
 
 class Game:
@@ -26,7 +29,14 @@ class Game:
         elif self.turn == 'black':
             self.__turn = 'white'
 
-    def handle_piece(self, position: tuple[int, int]) -> None:
+    def execute_move(self, move: Move) -> Move:
+        self.board.execute_move(move)
+        self.board.selected_piece = None
+        self.change_turn()
+        return move
+
+    def handle_piece(self, position: tuple[int, int]) -> Move:
+        played_move: Union[Move, None] = None
         clicked_row = 7 - int(position[1] / 100)
         clicked_col = int(position[0] / 100)
 
@@ -41,9 +51,7 @@ class Game:
                 move_to_be_played = [move for move in
                                      self.board.valid_moves(self.board.selected_piece)
                                      if move.to_position == [clicked_row, clicked_col]][0]
-                self.board.execute_move(move_to_be_played)
-                self.board.selected_piece = None
-                self.change_turn()
+                played_move = self.execute_move(move_to_be_played)
 
             elif (self.board.selected_piece.position == [clicked_row, clicked_col] or  # CLICKED ON ITSELF
                   self.board.board[clicked_row][clicked_col] is None):  # CLICKED ON EMPTY SQUARE
@@ -51,6 +59,8 @@ class Game:
 
             else:  # CLICKED ON ANOTHER PIECE
                 self.board.selected_piece = self.board.board[clicked_row][clicked_col]
+
+            return played_move
 
     def undo_move(self) -> None:
         self.board.undo_move()

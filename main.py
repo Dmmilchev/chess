@@ -1,9 +1,11 @@
 from GUI import chessGUI
 from GUI import constants
+from client.Client import Client
 
 
 def main() -> None:
-    gui = chessGUI.ChessGUI(constants.WIDTH, constants.HEIGHT)
+    client = Client()
+    gui = chessGUI.ChessGUI(constants.WIDTH, constants.HEIGHT, client)
     gui.while_loop()
 
 

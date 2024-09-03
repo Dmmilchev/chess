@@ -146,7 +146,7 @@ class Board:
         attacked_squares = [x.to_position for x in danger_moves]
         return get_king().position in attacked_squares
 
-    def execute_move(self, move: Move) -> None:
+    def execute_move(self, move: Move) -> Move:
         if move.captured_piece is not None:
             self.board[move.captured_piece.position[0]][move.captured_piece.position[1]] = None
         self.board[move.to_position[0]][move.to_position[1]] = move.piece
@@ -185,6 +185,7 @@ class Board:
                     self.board[7][3].move([7, 3])
                     self.board[7][0] = None
         self.history.append(move)
+        return move
 
     def undo_move(self) -> None:
         if len(self.history) < 1:

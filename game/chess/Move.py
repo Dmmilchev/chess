@@ -16,9 +16,9 @@ class Move:
             raise ValueError('To position must have length 2 and it\'s values must be between 0 and 7')
         if captured_piece is not None:
             self.__captured_piece_position = captured_piece.position
-        self.__captured_piece = captured_piece
-        self.__is_promotion = is_promotion
-        self.__is_castling = is_castling
+        self.__captured_piece: Piece = captured_piece
+        self.__is_promotion: bool = is_promotion
+        self.__is_castling: bool = is_castling
 
     @property
     def piece(self) -> Piece:

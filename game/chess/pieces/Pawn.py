@@ -14,6 +14,18 @@ class Pawn(Piece):
             pygame.image.load(path),
             (self.height, self.width))
 
+    def __getstate__(self) -> dict:
+        state = self.__dict__.copy()
+        del state['_Pawn__image']
+        return state
+
+    def __setstate__(self, state: dict) -> None:
+        self.__dict__.update(state)
+        path: str = super().calculate_path_to_image('pawn', self.colour)
+        self.__image: pygame.Surface = pygame.transform.scale(
+            pygame.image.load(path),
+            (self.height, self.width))
+
     def draw(self, surface: pygame.Surface) -> None:
         surface.blit(self.__image, super().calculate_surface_coordinates())
 

@@ -7,12 +7,12 @@ from typing import Union
 
 class Piece(ABC):
     def __init__(self, colour: str, height: int, width: int, position: list[int]) -> None:
-        self.__colour = colour
-        self.__height = height
-        self.__width = width
-        self.__moved = False
+        self.__colour: str = colour
+        self.__height: int = height
+        self.__width: int = width
+        self.__moved: bool = False
         if 0 <= position[0] <= 7 and 0 <= position[1] <= 7 and len(position) == 2:
-            self.__position = position
+            self.__position: list[int] = position
         else:
             raise ValueError('Position must be an array with length 2 and values between 0 and 7')
 

@@ -1,6 +1,6 @@
 # Chess Game Project
 
-![Chess Intro](https://example.com/path/to/chess-intro.gif)  <!-- Replace with your GIF -->
+![Chess Intro](presentation/pawn-moves-official2.gif)
 
 ## Description
 

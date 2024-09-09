@@ -91,17 +91,17 @@ class Board:
     @staticmethod
     def setup_board(self) -> list[list[Union[Piece, None]]]:
         board: list[list[Union[Piece, None]]] = [[None for _ in range(8)] for _ in range(8)]
-        # for col in range(8):
-        #     board[1][col] = Pawn('white', self.__piece_height, self.__piece_width, [1, col])
-        #     board[6][col] = Pawn('black', self.__piece_height, self.__piece_width, [6, col])
+        for col in range(8):
+            board[1][col] = Pawn('white', self.__piece_height, self.__piece_width, [1, col])
+            board[6][col] = Pawn('black', self.__piece_height, self.__piece_width, [6, col])
         # WHITE PIECES
-        # board[0][0] = Rook('white', self.__piece_height, self.__piece_width, [0, 0])
-        # board[0][7] = Rook('white', self.__piece_height, self.__piece_width, [0, 7])
-        # board[0][1] = Knight('white', self.__piece_height, self.__piece_width, [0, 1])
-        # board[0][6] = Knight('white', self.__piece_height, self.__piece_width, [0, 6])
-        # board[0][2] = Bishop('white', self.__piece_height, self.__piece_width, [0, 2])
-        # board[0][5] = Bishop('white', self.__piece_height, self.__piece_width, [0, 5])
-        # board[0][3] = Queen('white', self.__piece_height, self.__piece_width, [0, 3])
+        board[0][0] = Rook('white', self.__piece_height, self.__piece_width, [0, 0])
+        board[0][7] = Rook('white', self.__piece_height, self.__piece_width, [0, 7])
+        board[0][1] = Knight('white', self.__piece_height, self.__piece_width, [0, 1])
+        board[0][6] = Knight('white', self.__piece_height, self.__piece_width, [0, 6])
+        board[0][2] = Bishop('white', self.__piece_height, self.__piece_width, [0, 2])
+        board[0][5] = Bishop('white', self.__piece_height, self.__piece_width, [0, 5])
+        board[0][3] = Queen('white', self.__piece_height, self.__piece_width, [0, 3])
         board[0][4] = King('white', self.__piece_height, self.__piece_width, [0, 4])
 
         # BLACK PIECES

@@ -1,5 +1,5 @@
 # Chess Game Project
-
+![Pawn move](presentation/start.gif)
 
 ## Description
 
@@ -28,6 +28,7 @@ I faced many hurdles while trying to finish the project. I had to refactor my co
 ![Pawn move](presentation/pawn-moves-official2.gif)
 
 ### En Passant
+![Pawn move](presentation/en-passant.gif)
 
 ### Castle
 White queen side castle:

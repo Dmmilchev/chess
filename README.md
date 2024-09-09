@@ -1,5 +1,5 @@
 # Chess Game Project
-![Pawn move](presentation/start.gif)
+![start](presentation/start.gif)
 
 ## Description
 
@@ -10,6 +10,7 @@ Welcome to my Chess Game project! This project is a fully functioning chess game
 - **Programming Language**: Python
 - **Game Logic**: Custom implementation of chess rules
 - **Animations**: Pygame
+- **GUI**: Pygame_GUI
 - **Version Control**: Git
 
 ## Motivation
@@ -28,7 +29,7 @@ I faced many hurdles while trying to finish the project. I had to refactor my co
 ![Pawn move](presentation/pawn-moves-official2.gif)
 
 ### En Passant
-![Pawn move](presentation/en-passant.gif)
+![En passant](presentation/en-passant.gif)
 
 ### Castle
 White queen side castle:
@@ -38,16 +39,16 @@ Black king side castle:
 ![King castle](presentation/black-king-castle-official.gif)
 
 Can't castle sometimes:
-![Chess Intro](presentation/cant-castle-official.gif)
+![Can't castle](presentation/cant-castle-official.gif)
 As chess players know, you can't castle when you are in check, either king or rook has moved, or the square next to the king is attacked. Every one of these features is of course implemented! Here I show just one of those features and everyone that wants to see from themselves can clone the repo and play!
 
 
 ### Bishop
-![Chess Intro](presentation/bishop-move-official.gif)
+![bishop move](presentation/bishop-move-official.gif)
 
 
 ### Knight
-![Chess Intro](presentation/knight-move-official.gif)
+![Knight move](presentation/knight-move-official.gif)
 
 
 ## How to Play
@@ -59,5 +60,20 @@ As chess players know, you can't castle when you are in check, either king or ro
 * Run main.py again on the same or different machine.
 * Play.
 
+## Not good enough
+In the past I have been scared of using any code as portfolio and showing it to people. Fear that my code is not good enough is always present, but I am channeling these emotions into trying to get better and not be scared of showing my work. I know it is not perfect. The GUI manager and the networking part is probably the weakest link in the chain of this project, but they are "good enough". I will improve them, when I have time, but for now it will stay like this.
+
 ## Ways to extend
-...
+A project can never be finished. Chess apps have many, many features. I would like to extend the project into the following directions:
+* Beautiful GUI.
+* Login system with database.
+* ELO system.
+* Matchmaking system.
+* Ask enemy to undo move.
+* Chat between players.
+* Showing captured piece.
+* Game over, checkmate, stalemate page.
+* Surrender.
+
+Some of these, for example game over, checkmate, stalemate pages, undo moves and others are low hanging fruits to extends. Why? Because the logic is already built into the game module, and the only piece missing is the GUI and networking part.
+

@@ -9,8 +9,8 @@
          },
          "font":
          {
-             "name": "montserrat",
-             "size": "20",
+             "name": "arial",
+             "size": "25",
              "bold": "1",
              "italic": "0"
          },
@@ -19,6 +19,17 @@
              "text_shadow": "1",
              "text_shadow_size": "1",
              "text_shadow_offset": "0,0"
+         }
+     },
+
+     "button":
+     {
+                  "font":
+         {
+             "name": "arial",
+             "size": "25",
+             "bold": "1",
+             "italic": "0"
          }
      }
  }

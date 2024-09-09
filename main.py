@@ -1,12 +1,12 @@
-from GUI import GUI
+from GUI.managerGUI import ManagerGUI
 from GUI import constants
 from client.Client import Client
 
 
 def main() -> None:
     client = Client()
-    gui = GUI.GUI(constants.WIDTH, constants.HEIGHT, client)
-    gui.while_loop()
+    gui = ManagerGUI(constants.WIDTH, constants.HEIGHT, client)
+    gui.start()
 
 
 if __name__ == '__main__':

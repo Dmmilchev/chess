@@ -11,7 +11,7 @@ class GUI:
         self.__client = client
         self.__chessGUI = ChessGUI(width, height, client)
 
-    def while_loop(self) -> None:
+    def while_loop(self) -> bool:
         # pygame setup
         pygame.init()
         screen = pygame.display.set_mode((self.__width, self.__height))
@@ -39,3 +39,4 @@ class GUI:
             clock.tick(60)  # limits FPS to 60
 
         pygame.quit()
+        return False

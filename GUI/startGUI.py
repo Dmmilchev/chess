@@ -7,9 +7,9 @@ class StartGUI:
         self.__width: int = width
         self.__height: int = height
         self.__background_image = (
-            pygame.transform.scale(pygame.image.load('./static/background.jpg'), (self.__width, self.__height)))
+            pygame.transform.scale(pygame.image.load('./GUI/static/background.jpg'), (self.__width, self.__height)))
 
-    def while_loop(self) -> None:
+    def while_loop(self) -> bool:
         # Initialize Pygame
         pygame.init()
 
@@ -19,21 +19,16 @@ class StartGUI:
         pygame.display.set_caption('Deo\'s chess')
 
         # Set up the UI manager
-        ui_manager = pygame_gui.UIManager(window_size, theme_path='./static/theme.json')
+        ui_manager = pygame_gui.UIManager(window_size, theme_path='./GUI/static/theme.json')
 
         # Set up the clock
         clock = pygame.time.Clock()
 
         # Create a button
-        button_rect = pygame.Rect(350, 275, 100, 50)
+        button_rect = pygame.Rect(250, 275, 300, 100)
         button = pygame_gui.elements.UIButton(relative_rect=button_rect,
-                                              text='Click Me',
+                                              text='Start game',
                                               manager=ui_manager)
-
-        # Create a text box
-        text_input_rect = pygame.Rect(250, 200, 300, 50)
-        text_input = pygame_gui.elements.UITextEntryLine(relative_rect=text_input_rect,
-                                                         manager=ui_manager)
 
         # Create a label
         label_rect = pygame.Rect(250, 100, 300, 50)  # Position and size of the label
@@ -44,9 +39,7 @@ class StartGUI:
             object_id="#welcome_label"
         )
 
-        # Set the font and font size
-        #ui_manager.ui_theme.font_dictionary.default_font = pygame.font.SysFont("Arial", 20)
-
+        to_return: bool = False
         running = True
         while running:
             time_delta = clock.tick(60) / 1000.0  # Manage time for the game loop
@@ -54,11 +47,13 @@ class StartGUI:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    to_return = False
 
                 # Handle UI events
                 if event.type == pygame_gui.UI_BUTTON_PRESSED:
                     if event.ui_element == button:
-                        print('Button pressed!')
+                        to_return = True
+                        running = False
 
                 ui_manager.process_events(event)
 
@@ -74,7 +69,4 @@ class StartGUI:
             pygame.display.flip()
 
         pygame.quit()
-
-
-gui = StartGUI(800, 800)
-gui.while_loop()
+        return to_return

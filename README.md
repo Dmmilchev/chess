@@ -15,8 +15,6 @@ Welcome to my Chess Game project! This project is a fully functioning chess game
 
 ## Motivation
 
-This project was developed as a passion project to deepen my understanding of game development and algorithmic thinking. Chess, being a game with a rich history and deep complexity, was the perfect choice to challenge myself. The project also allowed me to explore various technologies and sharpen my skills in software development, problem-solving, and UI/UX design.
-
 I am always trying to improve at every aspect of life, but mostly at programming. The university courses I have taken has thought me much, but I had never worked on such a complex project as this one before. I wanted to test my algorithmic thinking and OOP design skills with a project and my passion for both programming and chess brought me here. Chess, being a game with a rich history and deep complexity, was the perfect choice to challenge myself.
 
 ## Hurdles

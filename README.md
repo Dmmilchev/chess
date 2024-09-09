@@ -1,6 +1,5 @@
 # Chess Game Project
 
-![Chess Intro](presentation/pawn-moves-official2.gif)
 
 ## Description
 
@@ -26,14 +25,28 @@ I faced many hurdles while trying to finish the project. I had to refactor my co
 ## Visualizations
 
 ### Pawn
+![Pawn move](presentation/pawn-moves-official2.gif)
 
 ### En Passant
 
 ### Castle
+White queen side castle:
+![White castle](presentation/white-queen-castle.gif)
+
+Black king side castle:
+![King castle](presentation/black-king-castle-official.gif)
+
+Can't castle sometimes:
+![Chess Intro](presentation/cant-castle-official.gif)
+As chess players know, you can't castle when you are in check, either king or rook has moved, or the square next to the king is attacked. Every one of these features is of course implemented! Here I show just one of those features and everyone that wants to see from themselves can clone the repo and play!
+
 
 ### Bishop
+![Chess Intro](presentation/bishop-move-official.gif)
+
 
 ### Knight
+![Chess Intro](presentation/knight-move-official.gif)
 
 
 ## How to Play
